@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "akkaserverless/annotations.proto";
+import "google/api/annotations.proto";
+import "inventory_domain.proto";
+
+package com.lightbend.asdemo.inventory.view;
+
+option go_package = "com/lightbend/asdemo/inventory/view";
+
+message GetItemsByUserRequest {
+  string user_id = 1;
+}
+
+message ItemView {
+  string item_id = 1;
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string image_url = 5;
+  bool tradable = 6;
+  double gps_lat = 7;
+  double gps_lon = 8;
+  repeated string tags = 9;
+  string trade_id = 10;
+}
+
+service ItemsByUser {
+  rpc ProcessItemAdded(com.lightbend.asdemo.inventory.domain.ItemAdded) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  };
+
+  rpc ProcessMarkedTradable(com.lightbend.asdemo.inventory.domain.MarkedTradable) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  };
+
+  rpc ProcessMarkedNotTradable(com.lightbend.asdemo.inventory.domain.MarkedNotTradable) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  };
+
+  rpc ProcessItemOwnerChanged(com.lightbend.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  }
+
+  rpc ProcessTradeStarted(com.lightbend.asdemo.inventory.domain.TradeStarted) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  }
+
+  rpc ProcessTradeCancelled (com.lightbend.asdemo.inventory.domain.TradeCancelled) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  }
+
+  rpc GetItemsByUser(GetItemsByUserRequest) returns (stream ItemView) {
+    option (akkaserverless.method).view.query = {
+      query: "SELECT * FROM item WHERE user_id = :user_id"
+    };
+    option (google.api.http) = {
+      get: "/inventory/items-by-user/{user_id}"
+    };
+  };
+}

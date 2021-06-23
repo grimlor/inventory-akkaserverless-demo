@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package com.lightbend.asdemo.inventory.domain;
+
+import "akkaserverless/annotations.proto";
+
+option java_outer_classname = "InventoryDomain";
+
+option (akkaserverless.file).event_sourced_entity = {
+  name: "Item"
+  entity_type: "ItemEntity"
+  state: "ItemState"
+  events: ["ItemAdded", "ItemDeleted", "MarkedTradable", "MarkedNotTradable", "ItemOwnerChanged", "TradeStarted", "TradeCancelled"]
+};
+
+message ItemState {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string image_url = 5;
+  bool tradable = 6;
+  double gps_lat = 7;
+  double gps_lon = 8;
+  repeated string tags = 9;
+  string trade_id = 10;
+}
+
+message ItemAdded {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string image_url = 5;
+  bool tradable = 6;
+  double gps_lat = 7;
+  double gps_lon = 8;
+  repeated string tags = 9;
+  string trade_id = 10;
+}
+
+message ItemDeleted {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message MarkedTradable {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message MarkedNotTradable {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message ItemOwnerChanged {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string user_id = 2;
+}
+
+message TradeStarted {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string trade_id = 2;
+}
+
+message TradeCancelled {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string trade_id = 2;
+}

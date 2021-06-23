@@ -1,0 +1,112 @@
+// This is the public API offered by your entity.
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "akkaserverless/annotations.proto";
+import "google/api/annotations.proto";
+import "../inventory_domain.proto";
+
+package com.lightbend.asdemo.inventory;
+
+option java_outer_classname = "InventoryApi";
+
+message Item {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string image_url = 5;
+  bool tradable = 6;
+  double gps_lat = 7;
+  double gps_lon = 8;
+  repeated string tags = 9;
+  string trade_id = 10;
+}
+
+message AddItemCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string image_url = 5;
+  bool tradable = 6;
+  double gps_lat = 7;
+  double gps_lon = 8;
+  repeated string tags = 9;
+  string trade_id = 10;
+}
+
+message DeleteItemCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message MarkTradableCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message MarkNotTradableCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message ChangeOwnerCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+}
+
+message StartTradeCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string trade_id = 2;
+}
+
+message CancelTradeCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
+  string trade_id = 2;
+}
+
+service InventoryService {
+  option (akkaserverless.service) = {
+    type : SERVICE_TYPE_ENTITY
+    component : ".domain.Inventory"
+  };
+
+  rpc GetItem(GetItemCommand) returns (Item) {
+    option (google.api.http) = {
+      get: "/inventory/items/{item_id}"
+    };
+  };
+  rpc AddItem(AddItemCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/inventory/items/{item_id}"
+      body: "*"
+    };
+  };
+  rpc DeleteItem(DeleteItemCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/inventory/items/{item_id}"
+    };
+  };
+  rpc MarkTradable(MarkTradableCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/inventory/items/{item_id}/marktradable"
+    };
+  };
+  rpc MarkNotTradable(MarkNotTradableCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/inventory/items/{item_id}/marknottradable"
+    };
+  };
+  rpc ChangeOwner(ChangeOwnerCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/inventory/items/{item_id}/changeowner/{user_id}"
+    };
+  }
+  rpc StartTrade(StartTradeCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/inventory/items/{item_id}/starttrade/{trade_id}"
+    };
+  };
+  rpc CancelTrade(CancelTradeCommand) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/inventory/items/{item_id}/canceltrade/{trade_id}"
+    };
+  };
+}

@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "akkaserverless/annotations.proto";
+import "google/api/annotations.proto";
+import "inventory_domain.proto";
+
+package com.lightbend.asdemo.inventory.view;
+
+option go_package = "com/lightbend/asdemo/inventory/view";
+
+message GetItemsByTagAndBoundsRequest {
+  string tag = 1;
+  double top_left_lat = 2;
+  double top_left_lon = 3;
+  double bottom_right_lat = 4;
+  double bottom_right_lon = 5;
+  bool tradable = 6;
+}
+
+message ItemView {
+  string item_id = 1;
+  string user_id = 2;
+  string name = 3;
+  string description = 4;
+  string image_url = 5;
+  bool tradable = 6;
+  double gps_lat = 7;
+  double gps_lon = 8;
+  repeated string tags = 9;
+}
+
+service ItemsByTagAndBounds {
+  rpc ProcessItemAdded(com.lightbend.asdemo.inventory.domain.ItemAdded) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  };
+
+  rpc ProcessMarkedTradable(com.lightbend.asdemo.inventory.domain.MarkedTradable) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  };
+
+  rpc ProcessMarkedNotTradable(com.lightbend.asdemo.inventory.domain.MarkedNotTradable) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  };
+
+  rpc ProcessItemOwnerChanged(com.lightbend.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  }
+
+  rpc ProcessTradeStarted(com.lightbend.asdemo.inventory.domain.TradeStarted) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  }
+
+  rpc ProcessTradeCancelled (com.lightbend.asdemo.inventory.domain.TradeCancelled) returns (ItemView) {
+    option (akkaserverless.method).eventing.in = {
+      event_sourced_entity: "ItemEntity";
+    };
+    option (akkaserverless.method).view.update = {
+      table: "item"
+      transform_updates: true
+    };
+  }
+
+  rpc GetItemsByTagAndBounds(GetItemsByTagAndBoundsRequest) returns (stream ItemView) {
+    option (akkaserverless.method).view.query = {
+      query: "SELECT * FROM item WHERE tag = :tag AND gps_lat >= :top_left_lat AND gps_lon <= :top_left_lon AND gps_lat <= :bottom_right_lat AND gps_lon >= :bottom_right_lon AND tradable = :tradable"
+    };
+    option (google.api.http) = {
+      get: "/inventory/items-by-tag-bounds/{tag}/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/br-lon/{bottom_right_lon}/{tradable}"
+    }
+  };
+}
