@@ -4,9 +4,9 @@ import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
 import "inventory_domain.proto";
 
-package com.lightbend.asdemo.inventory.view;
+package com.lightbend.gsa.asdemo.inventory.view;
 
-option go_package = "com/lightbend/asdemo/inventory/view";
+option go_package = "com/lightbend/gsa/asdemo/inventory/view";
 
 message GetItemsByTagAndBoundsRequest {
   string tag = 1;
@@ -31,7 +31,7 @@ message ItemView {
 }
 
 service ItemsByTagAndBounds {
-  rpc ProcessItemAdded(com.lightbend.asdemo.inventory.domain.ItemAdded) returns (ItemView) {
+  rpc ProcessItemAdded(com.lightbend.gsa.asdemo.inventory.domain.ItemAdded) returns (ItemView) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -41,7 +41,7 @@ service ItemsByTagAndBounds {
     };
   };
 
-  rpc ProcessMarkedTradable(com.lightbend.asdemo.inventory.domain.MarkedTradable) returns (ItemView) {
+  rpc ProcessMarkedTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedTradable) returns (ItemView) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -51,7 +51,7 @@ service ItemsByTagAndBounds {
     };
   };
 
-  rpc ProcessMarkedNotTradable(com.lightbend.asdemo.inventory.domain.MarkedNotTradable) returns (ItemView) {
+  rpc ProcessMarkedNotTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedNotTradable) returns (ItemView) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -61,7 +61,7 @@ service ItemsByTagAndBounds {
     };
   };
 
-  rpc ProcessItemOwnerChanged(com.lightbend.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemView) {
+  rpc ProcessItemOwnerChanged(com.lightbend.gsa.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemView) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -71,7 +71,7 @@ service ItemsByTagAndBounds {
     };
   }
 
-  rpc ProcessTradeStarted(com.lightbend.asdemo.inventory.domain.TradeStarted) returns (ItemView) {
+  rpc ProcessTradeStarted(com.lightbend.gsa.asdemo.inventory.domain.TradeStarted) returns (ItemView) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -81,7 +81,7 @@ service ItemsByTagAndBounds {
     };
   }
 
-  rpc ProcessTradeCancelled (com.lightbend.asdemo.inventory.domain.TradeCancelled) returns (ItemView) {
+  rpc ProcessTradeCancelled (com.lightbend.gsa.asdemo.inventory.domain.TradeCancelled) returns (ItemView) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };

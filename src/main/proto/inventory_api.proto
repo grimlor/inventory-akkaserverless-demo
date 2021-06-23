@@ -5,7 +5,7 @@ import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
 
-package com.lightbend.asdemo.inventory;
+package com.lightbend.gsa.asdemo.inventory;
 
 option java_outer_classname = "InventoryApi";
 

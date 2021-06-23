@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.lightbend.asdemo.inventory.domain;
+package com.lightbend.gsa.asdemo.inventory.domain;
 
 import "akkaserverless/annotations.proto";
 

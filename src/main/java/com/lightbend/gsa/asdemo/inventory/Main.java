@@ -1,10 +1,10 @@
-package com.lightbend;
+package com.lightbend.gsa.asdemo.inventory;
 
 import com.akkaserverless.javasdk.AkkaServerless;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.lightbend.MainComponentRegistrations.withGeneratedComponentsAdded;
+import static com.lightbend.gsa.asdemo.inventory.MainComponentRegistrations.withGeneratedComponentsAdded;
 
 public final class Main {
     
