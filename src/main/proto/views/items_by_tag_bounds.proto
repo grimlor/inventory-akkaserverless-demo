@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
 import "inventory_domain.proto";
@@ -28,6 +27,7 @@ message ItemView {
   double gps_lat = 7;
   double gps_lon = 8;
   repeated string tags = 9;
+  string trade_id = 10;
 }
 
 service ItemsByTagAndBounds {
@@ -97,6 +97,6 @@ service ItemsByTagAndBounds {
     };
     option (google.api.http) = {
       get: "/inventory/items-by-tag-bounds/{tag}/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/br-lon/{bottom_right_lon}/{tradable}"
-    }
+    };
   };
 }

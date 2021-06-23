@@ -4,6 +4,7 @@ import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
 import "inventory_domain.proto";
+import "views/items_by_tag_bounds.proto";
 
 package com.lightbend.asdemo.inventory.view;
 
@@ -11,19 +12,6 @@ option go_package = "com/lightbend/asdemo/inventory/view";
 
 message GetItemsByUserRequest {
   string user_id = 1;
-}
-
-message ItemView {
-  string item_id = 1;
-  string user_id = 2;
-  string name = 3;
-  string description = 4;
-  string image_url = 5;
-  bool tradable = 6;
-  double gps_lat = 7;
-  double gps_lon = 8;
-  repeated string tags = 9;
-  string trade_id = 10;
 }
 
 service ItemsByUser {
