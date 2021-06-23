@@ -4,7 +4,7 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
-import "../inventory_domain.proto";
+import "inventory_domain.proto";
 
 package com.lightbend.asdemo.inventory;
 
