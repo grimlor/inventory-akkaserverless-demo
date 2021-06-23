@@ -68,7 +68,7 @@ message CancelTradeCommand {
 service InventoryService {
   option (akkaserverless.service) = {
     type : SERVICE_TYPE_ENTITY
-    component : ".domain.Inventory"
+    component : ".domain.Item"
   };
 
   rpc GetItem(GetItemCommand) returns (Item) {
