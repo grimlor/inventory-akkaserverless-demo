@@ -4,7 +4,6 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
-import "inventory_domain.proto";
 
 package com.lightbend.asdemo.inventory;
 
@@ -21,6 +20,10 @@ message Item {
   double gps_lon = 8;
   repeated string tags = 9;
   string trade_id = 10;
+}
+
+message GetItemCommand {
+  string item_id = 1 [(akkaserverless.field).entity_key = true];
 }
 
 message AddItemCommand {
