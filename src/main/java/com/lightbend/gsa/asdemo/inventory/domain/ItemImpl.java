@@ -66,22 +66,55 @@ public class ItemImpl extends ItemInterface {
     
     @Override
     protected Empty deleteItem(DeleteItemCommand command, CommandContext ctx) {
-        throw ctx.fail("The command handler for `DeleteItem` is not implemented, yet");
+        LOG.info("[{}] deleteItem", entityId);
+        if (state != null) {
+            var event = ItemDeleted.newBuilder()
+                        .setItemId(command.getItemId())
+                        .build();
+            ctx.emit(event);
+        }
+
+        return Empty.getDefaultInstance();
     }
     
     @Override
     protected Empty markTradable(MarkTradableCommand command, CommandContext ctx) {
-        throw ctx.fail("The command handler for `MarkTradable` is not implemented, yet");
+        LOG.info("[{}] markTradable", entityId);
+        if (state != null) {
+            var event = MarkedTradable.newBuilder()
+                        .setItemId(command.getItemId())
+                        .build();
+            ctx.emit(event);
+        }
+
+        return Empty.getDefaultInstance();
     }
     
     @Override
     protected Empty markNotTradable(MarkNotTradableCommand command, CommandContext ctx) {
-        throw ctx.fail("The command handler for `MarkNotTradable` is not implemented, yet");
+        LOG.info("[{}] markNotTradable", entityId);
+        if (state != null) {
+            var event = MarkedNotTradable.newBuilder()
+                        .setItemId(command.getItemId())
+                        .build();
+            ctx.emit(event);
+        }
+
+        return Empty.getDefaultInstance();
     }
     
     @Override
     protected Empty changeOwner(ChangeOwnerCommand command, CommandContext ctx) {
-        throw ctx.fail("The command handler for `ChangeOwner` is not implemented, yet");
+        LOG.info("[{}] changeOwner: {}", entityId, command);
+        if (state != null) {
+            var event = ItemOwnerChanged.newBuilder()
+                        .setItemId(command.getItemId())
+                        .setUserId(command.getUserId())
+                        .build();
+            ctx.emit(event);
+        }
+
+        return Empty.getDefaultInstance();
     }
     
     @Override
@@ -113,22 +146,32 @@ public class ItemImpl extends ItemInterface {
     
     @Override
     public void itemDeleted(ItemDeleted event) {
-        throw new RuntimeException("The event handler for `ItemDeleted` is not implemented, yet");
+        LOG.info("[{}] itemDeleted: {}", entityId, event);
+        state = null;
     }
     
     @Override
     public void markedTradable(MarkedTradable event) {
-        throw new RuntimeException("The event handler for `MarkedTradable` is not implemented, yet");
+        LOG.info("[{}] markedTradable", entityId);
+        state = state.toBuilder()
+                .setTradable(true)
+                .build();
     }
     
     @Override
     public void markedNotTradable(MarkedNotTradable event) {
-        throw new RuntimeException("The event handler for `MarkedNotTradable` is not implemented, yet");
+        LOG.info("[{}] markedNotTradable", entityId);
+        state = state.toBuilder()
+                .setTradable(false)
+                .build();
     }
     
     @Override
     public void itemOwnerChanged(ItemOwnerChanged event) {
-        throw new RuntimeException("The event handler for `ItemOwnerChanged` is not implemented, yet");
+        LOG.info("[{}] itemOwnerChanged", entityId);
+        state = state.toBuilder()
+                .setUserId(event.getUserId())
+                .build();
     }
     
     @Override
