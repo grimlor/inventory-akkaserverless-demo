@@ -15,7 +15,6 @@ public class ItemImpl extends ItemInterface {
 
     private static Logger LOG = LoggerFactory.getLogger(ItemImpl.class);
 
-    @SuppressWarnings("unused")
     private final String entityId;
 
     private Item state;

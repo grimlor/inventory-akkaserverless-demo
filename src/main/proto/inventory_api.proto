@@ -80,7 +80,7 @@ service InventoryService {
   };
   rpc AddItem(AddItemCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/inventory/items/{item_id}"
+      post: "/inventory/items"
       body: "*"
     };
   };
