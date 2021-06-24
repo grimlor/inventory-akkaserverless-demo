@@ -119,12 +119,31 @@ public class ItemImpl extends ItemInterface {
     
     @Override
     protected Empty startTrade(StartTradeCommand command, CommandContext ctx) {
-        throw ctx.fail("The command handler for `StartTrade` is not implemented, yet");
+        LOG.info("[{}] startTrade: {}", entityId, command);
+        if (state != null && state.getTradable()) {
+            var event = TradeStarted.newBuilder()
+                        .setItemId(command.getItemId())
+                        .setTradeId(command.getTradeId())
+                        .build();
+            ctx.emit(event);
+        }
+
+        return Empty.getDefaultInstance();
     }
     
     @Override
     protected Empty cancelTrade(CancelTradeCommand command, CommandContext ctx) {
-        throw ctx.fail("The command handler for `CancelTrade` is not implemented, yet");
+        LOG.info("[{}] cancelTrade: {}", entityId, command);
+        if (state != null && state.getTradeId() == command.getTradeId()) {
+            var event = TradeCancelled.newBuilder()
+                        .setItemId(command.getItemId())
+                        .setTradeId(command.getTradeId())
+                        .setTradable(command.getTradable())
+                        .build();
+            ctx.emit(event);
+        }
+
+        return Empty.getDefaultInstance();
     }
     
     @Override
@@ -176,12 +195,20 @@ public class ItemImpl extends ItemInterface {
     
     @Override
     public void tradeStarted(TradeStarted event) {
-        throw new RuntimeException("The event handler for `TradeStarted` is not implemented, yet");
+        LOG.info("[{}] tradeStarted", entityId);
+        state = state.toBuilder()
+                .setTradable(false)
+                .setTradeId(event.getTradeId())
+                .build();
     }
     
     @Override
     public void tradeCancelled(TradeCancelled event) {
-        throw new RuntimeException("The event handler for `TradeCancelled` is not implemented, yet");
+        LOG.info("[{}] tradeCancelled", entityId);
+        state = state.toBuilder()
+                .setTradable(event.getTradable())
+                .setTradeId(Empty.getDefaultInstance().toString())
+                .build();
     }
 
     private Item convert(ItemState state) {

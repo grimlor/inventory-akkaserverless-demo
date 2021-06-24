@@ -10,15 +10,12 @@ import org.mockito.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.assertThrows;
 
 public class ItemTest {
     private String entityId = "entityId1";
     private String itemId = "item1";
     private ItemImpl entity;
     private CommandContext context = Mockito.mock(CommandContext.class);
-    
-    private class MockedContextFailure extends RuntimeException {};
     
     @Test
     public void nonexistentEntityIdReturnsNull() {
@@ -226,7 +223,7 @@ public class ItemTest {
     }
     
     @Test
-    public void changeOwnerTest() {
+    public void changeOwnerReturnsEmptyAndEmitsItemOwnerChanged() {
         entity = new ItemImpl(entityId);
         
         // Simulate event callback to drive state change
@@ -268,34 +265,159 @@ public class ItemTest {
     }
     
     @Test
-    public void startTradeTest() {
+    public void startTradeReturnsEmptyAndEmitsTradeStarted() {
         entity = new ItemImpl(entityId);
         
-        Mockito.when(context.fail("The command handler for `StartTrade` is not implemented, yet"))
-            .thenReturn(new MockedContextFailure());
-        
-        // TODO: set fields in command, and update assertions to match implementation
-        assertThrows(MockedContextFailure.class, () -> {
-            entity.startTradeWithReply(StartTradeCommand.newBuilder().build(), context);
-        });
-        
-        // TODO: if you wish to verify events:
-        //    Mockito.verify(context).emit(event);
+        // Simulate event callback to drive state change
+        var itemAddedEvent = ItemAdded.newBuilder()
+                                .setItemId(itemId)
+                                .setUserId("user1")
+                                .setName("test")
+                                .setDescription("Test item")
+                                .setTradable(true)
+                                .addTags("test1")
+                                .addTags("test2")
+                                .build();
+        entity.itemAdded(itemAddedEvent);
+
+        var getItemCommand = GetItemCommand.newBuilder()
+                            .setItemId(itemAddedEvent.getItemId())
+                            .build();
+        var item = entity.getItem(getItemCommand, context);
+        assertThat(item.getTradable(), is(itemAddedEvent.getTradable()));
+        assertThat(item.getTradeId(), is(Empty.getDefaultInstance().toString()));
+
+        var startTradeCommand = StartTradeCommand.newBuilder()
+                                .setItemId(item.getItemId())
+                                .setTradeId("trade1")
+                                .build();
+        var result = entity.startTrade(startTradeCommand, context);
+        assertThat("Should be Empty", result, instanceOf(Empty.class));
+
+        var expected = TradeStarted.newBuilder()
+                        .setItemId(startTradeCommand.getItemId())
+                        .setTradeId(startTradeCommand.getTradeId())
+                        .build();
+        Mockito.verify(context).emit(expected);
+
+        // Simulate event callback to drive state change
+        entity.tradeStarted(expected);
+
+        item = entity.getItem(getItemCommand, context);
+        assertThat(item.getTradeId(), is(expected.getTradeId()));
+        assertThat(item.getTradable(), is(false));
     }
     
     @Test
-    public void cancelTradeTest() {
+    public void startTradeOfNotTradableReturnsEmptyAndDoesNothingMore() {
         entity = new ItemImpl(entityId);
         
-        Mockito.when(context.fail("The command handler for `CancelTrade` is not implemented, yet"))
-            .thenReturn(new MockedContextFailure());
-        
-        // TODO: set fields in command, and update assertions to match implementation
-        assertThrows(MockedContextFailure.class, () -> {
-            entity.cancelTradeWithReply(CancelTradeCommand.newBuilder().build(), context);
-        });
-        
-        // TODO: if you wish to verify events:
-        //    Mockito.verify(context).emit(event);
+        // Simulate event callback to drive state change
+        var itemAddedEvent = ItemAdded.newBuilder()
+                                .setItemId(itemId)
+                                .setUserId("user1")
+                                .setName("test")
+                                .setDescription("Test item")
+                                .setTradable(false)
+                                .addTags("test1")
+                                .addTags("test2")
+                                .build();
+        entity.itemAdded(itemAddedEvent);
+
+        var getItemCommand = GetItemCommand.newBuilder()
+                            .setItemId(itemAddedEvent.getItemId())
+                            .build();
+        var item = entity.getItem(getItemCommand, context);
+        assertThat(item.getTradable(), is(itemAddedEvent.getTradable()));
+        assertThat(item.getTradeId(), is(Empty.getDefaultInstance().toString()));
+
+        var startTradeCommand = StartTradeCommand.newBuilder()
+                                .setItemId(item.getItemId())
+                                .setTradeId("trade1")
+                                .build();
+        var result = entity.startTrade(startTradeCommand, context);
+        assertThat("Should be Empty", result, instanceOf(Empty.class));
+
+        Mockito.verifyNoInteractions(context);
+    }
+    
+    @Test
+    public void cancelTradeReturnsEmptyAndEmitsTradeCancelled() {
+        entity = new ItemImpl(entityId);
+            
+        // Simulate event callback to drive state change
+        var itemAddedEvent = ItemAdded.newBuilder()
+                                .setItemId(itemId)
+                                .setUserId("user1")
+                                .setName("test")
+                                .setDescription("Test item")
+                                .setTradable(false)
+                                .setTradeId("trade1")
+                                .addTags("test1")
+                                .addTags("test2")
+                                .build();
+        entity.itemAdded(itemAddedEvent);
+
+        var getItemCommand = GetItemCommand.newBuilder()
+                            .setItemId(itemAddedEvent.getItemId())
+                            .build();
+        var item = entity.getItem(getItemCommand, context);
+        assertThat(item.getTradable(), is(itemAddedEvent.getTradable()));
+        assertThat(item.getTradeId(), is(itemAddedEvent.getTradeId()));
+
+        var cancelTradeCommand = CancelTradeCommand.newBuilder()
+                                .setItemId(item.getItemId())
+                                .setTradeId(item.getTradeId())
+                                .setTradable(true)
+                                .build();
+        var result = entity.cancelTrade(cancelTradeCommand, context);
+        assertThat("Should be Empty", result, instanceOf(Empty.class));
+
+        var expected = TradeCancelled.newBuilder()
+                        .setItemId(cancelTradeCommand.getItemId())
+                        .setTradeId(cancelTradeCommand.getTradeId())
+                        .setTradable(cancelTradeCommand.getTradable())
+                        .build();
+        Mockito.verify(context).emit(expected);
+
+        // Simulate event callback to drive state change
+        entity.tradeCancelled(expected);
+
+        item = entity.getItem(getItemCommand, context);
+        assertThat(item.getTradeId(), is(Empty.getDefaultInstance().toString()));
+        assertThat(item.getTradable(), is(true));
+    }
+    
+    @Test
+    public void cancelTradeOfNotInTradeReturnsEmptyAndDoesNothing() {
+        entity = new ItemImpl(entityId);
+            
+        // Simulate event callback to drive state change
+        var itemAddedEvent = ItemAdded.newBuilder()
+                                .setItemId(itemId)
+                                .setUserId("user1")
+                                .setName("test")
+                                .setDescription("Test item")
+                                .setTradable(true)
+                                .addTags("test1")
+                                .addTags("test2")
+                                .build();
+        entity.itemAdded(itemAddedEvent);
+
+        var getItemCommand = GetItemCommand.newBuilder()
+                            .setItemId(itemAddedEvent.getItemId())
+                            .build();
+        var item = entity.getItem(getItemCommand, context);
+        assertThat(item.getTradable(), is(itemAddedEvent.getTradable()));
+        assertThat(item.getTradeId(), is(itemAddedEvent.getTradeId()));
+
+        var cancelTradeCommand = CancelTradeCommand.newBuilder()
+                                .setItemId(item.getItemId())
+                                .setTradeId("trade1")
+                                .setTradable(true)
+                                .build();
+        var result = entity.cancelTrade(cancelTradeCommand, context);
+        assertThat("Should be Empty", result, instanceOf(Empty.class));
+        Mockito.verifyNoInteractions(context);
     }
 }
