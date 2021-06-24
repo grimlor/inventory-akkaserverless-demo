@@ -3,9 +3,16 @@ package com.lightbend.gsa.asdemo.inventory.domain;
 import com.akkaserverless.javasdk.eventsourcedentity.CommandContext;
 import com.google.protobuf.Empty;
 import com.lightbend.gsa.asdemo.inventory.InventoryApi;
+import com.lightbend.gsa.asdemo.inventory.InventoryApi.AddItemCommand;
+import com.lightbend.gsa.asdemo.inventory.InventoryApi.GetItemCommand;
+import com.lightbend.gsa.asdemo.inventory.InventoryApi.Item;
+import com.lightbend.gsa.asdemo.inventory.domain.InventoryDomain.ItemAdded;
+
 import org.junit.Test;
 import org.mockito.*;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThrows;
 
 public class ItemTest {
@@ -16,35 +23,73 @@ public class ItemTest {
     private class MockedContextFailure extends RuntimeException {};
     
     @Test
-    public void getItemTest() {
+    public void nonexistentEntityIdReturnsNull() {
         entity = new ItemImpl(entityId);
-        
-        Mockito.when(context.fail("The command handler for `GetItem` is not implemented, yet"))
-            .thenReturn(new MockedContextFailure());
-        
-        // TODO: set fields in command, and update assertions to match implementation
-        assertThrows(MockedContextFailure.class, () -> {
-            entity.getItemWithReply(InventoryApi.GetItemCommand.newBuilder().build(), context);
-        });
-        
-        // TODO: if you wish to verify events:
-        //    Mockito.verify(context).emit(event);
+
+        var item = entity.getItem(GetItemCommand.newBuilder().setItemId(entityId).build(), context);
+        assertThat("Item should not exist yet.", item, is(nullValue()));
     }
     
     @Test
-    public void addItemTest() {
+    public void addItemReturnsEmptyAndEmitsItemAdded() {
         entity = new ItemImpl(entityId);
+
+        var command = AddItemCommand.newBuilder()
+                        .setItemId(entityId)
+                        .setUserId("user1")
+                        .setName("test")
+                        .setDescription("Test item")
+                        .setTradable(false)
+                        .addTags("test1")
+                        .addTags("test2")
+                        .build();
+        var item = entity.addItem(command, context);
+
+        assertThat("Should be Empty", item, instanceOf(Empty.class));
         
-        Mockito.when(context.fail("The command handler for `AddItem` is not implemented, yet"))
-            .thenReturn(new MockedContextFailure());
-        
-        // TODO: set fields in command, and update assertions to match implementation
-        assertThrows(MockedContextFailure.class, () -> {
-            entity.addItemWithReply(InventoryApi.AddItemCommand.newBuilder().build(), context);
-        });
-        
-        // TODO: if you wish to verify events:
-        //    Mockito.verify(context).emit(event);
+        var expected = ItemAdded.newBuilder()
+                        .setItemId(entityId)
+                        .setUserId("user1")
+                        .setName("test")
+                        .setDescription("Test item")
+                        .setTradable(false)
+                        .addTags("test1")
+                        .addTags("test2")
+                        .build();
+        Mockito.verify(context).emit(expected);
+    }
+
+    @Test
+    public void getItemReturnsRequestedItem() {
+        entity = new ItemImpl(entityId);
+
+        // Simulate event callback to drive state change
+        var itemAddedEvent = ItemAdded.newBuilder()
+                        .setItemId(entityId)
+                        .setUserId("user1")
+                        .setName("test")
+                        .setDescription("Test item")
+                        .setTradable(false)
+                        .addTags("test1")
+                        .addTags("test2")
+                        .build();
+        entity.itemAdded(itemAddedEvent);
+
+        var expected = Item.newBuilder()
+                        .setItemId(entityId)
+                        .setUserId("user1")
+                        .setName("test")
+                        .setDescription("Test item")
+                        .setTradable(false)
+                        .addTags("test1")
+                        .addTags("test2")
+                        .build();
+
+        var getCommand = GetItemCommand.newBuilder()
+                            .setItemId(entityId)
+                            .build();
+        var result = entity.getItem(getCommand, context);
+        assertThat("Item should exist.", result, is(expected));
     }
     
     @Test

@@ -13,6 +13,6 @@ public final class Main {
     public static void main(String[] args) throws Exception {
         LOG.info("starting the Akka Serverless service");
         withGeneratedComponentsAdded(new AkkaServerless())
-                .start().toCompletableFuture().get();
+            .start().toCompletableFuture().get();
     }
 }
