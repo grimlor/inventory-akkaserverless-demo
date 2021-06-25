@@ -188,11 +188,13 @@ public class ItemIntegrationTest {
     @Test
     public void changeOwnerOnExistingEntity() throws Exception {
         var itemId = createTestItem(false, "changeOwner");
+        var item = getItem(itemId);
+        assertThat(item.getUserId(), is("user1"));
 
         var newOwner = "newOwner";
         changeOwner(itemId, newOwner);
 
-        var item = getItem(itemId);
+        item = getItem(itemId);
         assertThat(item.getItemId(), is(itemId));
         assertThat(item.getUserId(), is(newOwner));
     }
@@ -212,6 +214,7 @@ public class ItemIntegrationTest {
 
         var tradeId = "tradeId";
         startTrade(itemId, tradeId);
+
         item = getItem(itemId);
         assertThat(item.getItemId(), is(itemId));
         assertThat(item.getTradable(), is(false));
@@ -233,6 +236,7 @@ public class ItemIntegrationTest {
         assertThat(item.getTradable(), is(false));
 
         cancelTrade(itemId, tradeId, true);
+        
         item = getItem(itemId);
         assertThat(item.getItemId(), is(itemId));
         assertThat(item.getTradable(), is(true));

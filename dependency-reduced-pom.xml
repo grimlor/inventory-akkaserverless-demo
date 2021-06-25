@@ -248,12 +248,6 @@
           </plugin>
         </plugins>
       </build>
-      <properties>
-        <os.detected.arch>x86_64</os.detected.arch>
-        <os.detected.bitness>64</os.detected.bitness>
-        <os.detected.name>osx</os.detected.name>
-        <os.detected.classifier>osx-x86_64</os.detected.classifier>
-      </properties>
     </profile>
   </profiles>
   <repositories>
