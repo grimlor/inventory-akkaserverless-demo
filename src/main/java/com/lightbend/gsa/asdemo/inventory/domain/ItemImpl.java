@@ -159,7 +159,7 @@ public class ItemImpl extends ItemInterface {
                 .setGpsLon(event.getGpsLon())
                 .setTradeId(event.getTradeId())
                 .addAllTags(event.getTagsList())
-        .build();
+                .build();
     }
     
     @Override

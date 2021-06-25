@@ -17,7 +17,7 @@ message GetItemsByTagAndBoundsRequest {
   bool tradable = 6;
 }
 
-message ItemView {
+message ItemForTagBounds {
   string item_id = 1;
   string user_id = 2;
   string name = 3;
@@ -31,7 +31,7 @@ message ItemView {
 }
 
 service ItemsByTagAndBounds {
-  rpc ProcessItemAdded(com.lightbend.gsa.asdemo.inventory.domain.ItemAdded) returns (ItemView) {
+  rpc ProcessItemAdded(com.lightbend.gsa.asdemo.inventory.domain.ItemAdded) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -41,7 +41,7 @@ service ItemsByTagAndBounds {
     };
   };
 
-  rpc ProcessMarkedTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedTradable) returns (ItemView) {
+  rpc ProcessMarkedTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedTradable) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -51,7 +51,7 @@ service ItemsByTagAndBounds {
     };
   };
 
-  rpc ProcessMarkedNotTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedNotTradable) returns (ItemView) {
+  rpc ProcessMarkedNotTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedNotTradable) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -61,7 +61,7 @@ service ItemsByTagAndBounds {
     };
   };
 
-  rpc ProcessItemOwnerChanged(com.lightbend.gsa.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemView) {
+  rpc ProcessItemOwnerChanged(com.lightbend.gsa.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -71,7 +71,7 @@ service ItemsByTagAndBounds {
     };
   }
 
-  rpc ProcessTradeStarted(com.lightbend.gsa.asdemo.inventory.domain.TradeStarted) returns (ItemView) {
+  rpc ProcessTradeStarted(com.lightbend.gsa.asdemo.inventory.domain.TradeStarted) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -81,7 +81,7 @@ service ItemsByTagAndBounds {
     };
   }
 
-  rpc ProcessTradeCancelled (com.lightbend.gsa.asdemo.inventory.domain.TradeCancelled) returns (ItemView) {
+  rpc ProcessTradeCancelled (com.lightbend.gsa.asdemo.inventory.domain.TradeCancelled) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
       event_sourced_entity: "ItemEntity";
     };
@@ -91,12 +91,13 @@ service ItemsByTagAndBounds {
     };
   }
 
-  rpc GetItemsByTagAndBounds(GetItemsByTagAndBoundsRequest) returns (stream ItemView) {
+  rpc GetItemsByTagAndBounds(GetItemsByTagAndBoundsRequest) returns (stream ItemForTagBounds) {
     option (akkaserverless.method).view.query = {
       query: "SELECT * FROM item WHERE tag = :tag AND gps_lat >= :top_left_lat AND gps_lon <= :top_left_lon AND gps_lat <= :bottom_right_lat AND gps_lon >= :bottom_right_lon AND tradable = :tradable"
     };
     option (google.api.http) = {
-      get: "/inventory/items-by-tag-bounds/{tag}/{top_left_lat}/{top_left_lon}/{bottom_right_lat}/br-lon/{bottom_right_lon}/{tradable}"
+      get: "/inventory/items-by-tag-bounds"
+      body: "*"
     };
   };
 }

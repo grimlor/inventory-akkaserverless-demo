@@ -8,8 +8,8 @@ import com.lightbend.gsa.asdemo.inventory.domain.InventoryDomain.*;
 import org.junit.Test;
 import org.mockito.*;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class ItemTest {
     private String entityId = "entityId1";
