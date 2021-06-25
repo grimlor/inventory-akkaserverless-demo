@@ -3,7 +3,34 @@ syntax = "proto3";
 import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
+import "events/trade_domain.proto";
 
 package com.lightbend.gsa.asdemo.inventory.events; 
 
 option go_package = "com/lightbend/gsa/asdemo/inventory/events";
+
+service TradeSubscribe {
+  rpc ConsumeTradeOffered(com.lightbend.gsa.trade.domain.TradeOffered) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing = {
+      in: {
+        topic: "stp-trade"
+      }
+    };
+  }
+
+  rpc ConsumeTradeAccepted(com.lightbend.gsa.trade.domain.TradeAccepted) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing = {
+      in: {
+        topic: "stp-trade"
+      }
+    };
+  }
+
+  rpc ConsumeTradeRejected(com.lightbend.gsa.trade.domain.TradeRejected) returns (google.protobuf.Empty) {
+    option (akkaserverless.method).eventing = {
+      in: {
+        topic: "stp-trade"
+      }
+    };
+  }
+}

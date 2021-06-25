@@ -39,7 +39,7 @@ service ItemsByTagAndBounds {
       table: "item"
       transform_updates: true
     };
-  };
+  }
 
   rpc ProcessMarkedTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedTradable) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
@@ -49,7 +49,7 @@ service ItemsByTagAndBounds {
       table: "item"
       transform_updates: true
     };
-  };
+  }
 
   rpc ProcessMarkedNotTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedNotTradable) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
@@ -59,7 +59,7 @@ service ItemsByTagAndBounds {
       table: "item"
       transform_updates: true
     };
-  };
+  }
 
   rpc ProcessItemOwnerChanged(com.lightbend.gsa.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemForTagBounds) {
     option (akkaserverless.method).eventing.in = {
@@ -99,5 +99,5 @@ service ItemsByTagAndBounds {
       get: "/inventory/items-by-tag-bounds"
       body: "*"
     };
-  };
+  }
 }

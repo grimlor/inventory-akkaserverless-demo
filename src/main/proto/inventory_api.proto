@@ -77,41 +77,48 @@ service InventoryService {
     option (google.api.http) = {
       get: "/inventory/items/{item_id}"
     };
-  };
+  }
+
   rpc AddItem(AddItemCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/inventory/items"
       body: "*"
     };
-  };
+  }
+
   rpc DeleteItem(DeleteItemCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/inventory/items/{item_id}"
     };
-  };
+  }
+  
   rpc MarkTradable(MarkTradableCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/inventory/items/{item_id}/marktradable"
     };
-  };
+  }
+
   rpc MarkNotTradable(MarkNotTradableCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/inventory/items/{item_id}/marknottradable"
     };
-  };
+  }
+
   rpc ChangeOwner(ChangeOwnerCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/inventory/items/{item_id}/changeowner/{user_id}"
     };
   }
+
   rpc StartTrade(StartTradeCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/inventory/items/{item_id}/starttrade/{trade_id}"
     };
-  };
+  }
+
   rpc CancelTrade(CancelTradeCommand) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/inventory/items/{item_id}/canceltrade/{trade_id}/{tradable}"
     };
-  };
+  }
 }

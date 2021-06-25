@@ -1,6 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
 import "akkaserverless/annotations.proto";
 import "google/api/annotations.proto";
 import "inventory_domain.proto";
@@ -35,7 +34,7 @@ service ItemsByUser {
       table: "item"
       transform_updates: true
     };
-  };
+  }
 
   rpc ProcessMarkedTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedTradable) returns (ItemForUser) {
     option (akkaserverless.method).eventing.in = {
@@ -45,7 +44,7 @@ service ItemsByUser {
       table: "item"
       transform_updates: true
     };
-  };
+  }
 
   rpc ProcessMarkedNotTradable(com.lightbend.gsa.asdemo.inventory.domain.MarkedNotTradable) returns (ItemForUser) {
     option (akkaserverless.method).eventing.in = {
@@ -55,7 +54,7 @@ service ItemsByUser {
       table: "item"
       transform_updates: true
     };
-  };
+  }
 
   rpc ProcessItemOwnerChanged(com.lightbend.gsa.asdemo.inventory.domain.ItemOwnerChanged) returns (ItemForUser) {
     option (akkaserverless.method).eventing.in = {
@@ -94,5 +93,5 @@ service ItemsByUser {
     option (google.api.http) = {
       get: "/inventory/items-by-user/{user_id}"
     };
-  };
+  }
 }
