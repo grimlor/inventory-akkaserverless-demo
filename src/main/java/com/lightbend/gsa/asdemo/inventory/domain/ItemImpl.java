@@ -133,7 +133,7 @@ public class ItemImpl extends ItemInterface {
     @Override
     protected Empty cancelTrade(CancelTradeCommand command, CommandContext ctx) {
         LOG.info("[{}] cancelTrade: {}", entityId, command);
-        if (state != null && state.getTradeId() == command.getTradeId()) {
+        if (state != null && state.getTradeId().equals(command.getTradeId())) {
             var event = TradeCancelled.newBuilder()
                         .setItemId(command.getItemId())
                         .setTradeId(command.getTradeId())

@@ -46,7 +46,7 @@ public class ItemIntegrationTest {
 
     Item getItem(String itemId) throws Exception {
         return client.getItem(GetItemCommand.newBuilder().setItemId(itemId).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
 
     Empty addItem(String itemId, String userId, String name, String description, boolean tradable, String tradeId) throws Exception {
@@ -59,7 +59,7 @@ public class ItemIntegrationTest {
                             .setTradable(tradable)
                             .setTradeId(tradeId)
                             .build()
-        ).toCompletableFuture().get(2, SECONDS);
+        ).toCompletableFuture().get(30, SECONDS);
     }
 
     String createTestItem(boolean tradable, String itemId) throws Exception {
@@ -82,32 +82,32 @@ public class ItemIntegrationTest {
 
     Empty deleteItem(String itemId) throws Exception {
         return client.deleteItem(DeleteItemCommand.newBuilder().setItemId(itemId).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
 
     Empty markTradable(String itemId) throws Exception {
         return client.markTradable(MarkTradableCommand.newBuilder().setItemId(itemId).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
 
     Empty markNotTradable(String itemId) throws Exception {
         return client.markNotTradable(MarkNotTradableCommand.newBuilder().setItemId(itemId).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
 
     Empty changeOwner(String itemId, String userId) throws Exception {
         return client.changeOwner(ChangeOwnerCommand.newBuilder().setItemId(itemId).setUserId(userId).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
 
     Empty startTrade(String itemId, String tradeId) throws Exception {
         return client.startTrade(StartTradeCommand.newBuilder().setItemId(itemId).setTradeId(tradeId).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
 
     Empty cancelTrade(String itemId, String tradeId, boolean tradable) throws Exception {
         return client.cancelTrade(CancelTradeCommand.newBuilder().setItemId(itemId).setTradeId(tradeId).setTradable(tradable).build())
-            .toCompletableFuture().get(2, SECONDS);
+            .toCompletableFuture().get(30, SECONDS);
     }
     
     @Test
