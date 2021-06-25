@@ -206,11 +206,13 @@ public class ItemIntegrationTest {
     @Test
     public void startTradeOnExistingEntity() throws Exception {
         var itemId = createTestItem(true, "startTrade");
+        var item = getItem(itemId);
+        assertThat(item.getTradeId(), is(Empty.getDefaultInstance().toString()));
+        assertThat(item.getTradable(), is(true));
 
         var tradeId = "tradeId";
         startTrade(itemId, tradeId);
-
-        var item = getItem(itemId);
+        item = getItem(itemId);
         assertThat(item.getItemId(), is(itemId));
         assertThat(item.getTradable(), is(false));
         assertThat(item.getTradeId(), is(tradeId));
@@ -228,11 +230,12 @@ public class ItemIntegrationTest {
         var itemId = createTestItem(false, "cancelTrade", tradeId);
         var item = getItem(itemId);
         assertThat(item.getTradeId(), is(tradeId));
+        assertThat(item.getTradable(), is(false));
 
         cancelTrade(itemId, tradeId, true);
         item = getItem(itemId);
         assertThat(item.getItemId(), is(itemId));
-        assertThat(item.getTradeId(), is(""));
         assertThat(item.getTradable(), is(true));
+        assertThat(item.getTradeId(), is(Empty.getDefaultInstance().toString()));
     }
 }
