@@ -247,6 +247,7 @@ public class ItemTest {
         var changeOwnerCommand = ChangeOwnerCommand.newBuilder()
                                     .setItemId(item.getItemId())
                                     .setUserId("user2")
+                                    .setTradable(false)
                                     .build();
         var result = entity.changeOwner(changeOwnerCommand, context);
         assertThat("Should be Empty", result, instanceOf(Empty.class));
@@ -254,6 +255,7 @@ public class ItemTest {
         var expected = ItemOwnerChanged.newBuilder()
                         .setItemId(changeOwnerCommand.getItemId())
                         .setUserId(changeOwnerCommand.getUserId())
+                        .setTradable(changeOwnerCommand.getTradable())
                         .build();
         Mockito.verify(context).emit(expected);
 
@@ -262,6 +264,8 @@ public class ItemTest {
 
         item = entity.getItem(getItemCommand, context);
         assertThat(item.getUserId(), is(expected.getUserId()));
+        assertThat(item.getTradable(), is(expected.getTradable()));
+        assertThat(item.getTradeId(), is(Empty.getDefaultInstance().toString()));
     }
     
     @Test

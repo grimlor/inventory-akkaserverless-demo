@@ -109,6 +109,7 @@ public class ItemImpl extends ItemInterface {
             var event = ItemOwnerChanged.newBuilder()
                         .setItemId(command.getItemId())
                         .setUserId(command.getUserId())
+                        .setTradable(command.getTradable())
                         .build();
             ctx.emit(event);
         }
@@ -189,6 +190,8 @@ public class ItemImpl extends ItemInterface {
         LOG.info("[{}] itemOwnerChanged", entityId);
         state = state.toBuilder()
                 .setUserId(event.getUserId())
+                .setTradable(event.getTradable())
+                .setTradeId(Empty.getDefaultInstance().toString())
                 .build();
     }
     

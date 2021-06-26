@@ -54,6 +54,7 @@ message MarkNotTradableCommand {
 message ChangeOwnerCommand {
   string item_id = 1 [(akkaserverless.field).entity_key = true];
   string user_id = 2;
+  bool tradable = 3;
 }
 
 message StartTradeCommand {
